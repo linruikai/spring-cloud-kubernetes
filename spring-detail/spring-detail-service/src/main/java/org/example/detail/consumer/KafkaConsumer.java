@@ -19,7 +19,7 @@ public class KafkaConsumer {
 
     @Autowired
     private IDetailService detailService;
-    @KafkaListener(topicPattern = "${spring.kafka.topics.topic-a}")
+    @KafkaListener(topicPattern = "${spring.kafka.topics.topic-a}") // ^topic-a(?:-.+)? 正则匹配，以topic-a开头，后面紧接字符- 的所有topic  topic-a  topic-a-gray
     public void listen(ConsumerRecord<String, String> record) {
         log.info("Received message: {} from topic:{}",  record.value(), record.topic());
         Detail detail = detailService.getById(1);

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-gateway
+  namespace: default
+data:
+  application.yaml: |-
+    spring:
+      cloud:
+        gateway:
+          routes:
+            # 注意是http,不是lb,后面紧跟的是服务的k8s中的service.name
+            - id: spring-user
+              uri: lb://spring-user
+              predicates:
+                - Path=/user/**
+              filters:
+                - StripPrefix=1
+            - id: spring-product
+              uri: lb://spring-product
+              predicates:
+                - Path=/product/**
+              filters:
+                - StripPrefix=1
+            - id: spring-detail
+              uri: lb://spring-detail
+              predicates:
+                - Path=/detail/**
+              filters:
+                - StripPrefix=1

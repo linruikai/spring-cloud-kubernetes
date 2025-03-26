@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.example</groupId>
-        <artifactId>spring-cloud-alibaba</artifactId>
+        <artifactId>spring-cloud-kubernetes</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -16,12 +16,31 @@
         <module>spring-user-client</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>spring-entity</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <properties>
+        <spring-base.version>1.0.0-SNAPSHOT</spring-base.version>
+        <spring-entity.version>1.0.0-SNAPSHOT</spring-entity.version>
+        <spring-product-client.version>1.0.0-SNAPSHOT</spring-product-client.version>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>spring-base</artifactId>
+                <version>${spring-base.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>spring-entity</artifactId>
+                <version>${spring-entity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>spring-product-client</artifactId>
+                <version>${spring-product-client.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

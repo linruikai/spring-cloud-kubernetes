@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.example.base.config.Constant;
 import org.example.base.config.GrayHeaderContextHolder;
 import org.example.base.config.datasource.DataSourceProperties;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
@@ -31,11 +32,11 @@ public class DynamicDataSourceConfig {
         DynamicDataSource routingDataSource = new DynamicDataSource();
         Map<Object, Object> targetDataSources = new HashMap<>();
         dataSourceProperties.getDatasource().forEach((key, value) -> {
-            DataSource dataSource = createDataSource(value);
-            targetDataSources.put(key, dataSource);
+            log.info("读取到的mysql配置 {}",key);
+            targetDataSources.put(key, createDataSource(value));
         });
+        routingDataSource.setDefaultTargetDataSource(targetDataSources.get(Constant.X_DEFAULT_VERSION)); // Default DataSource
         routingDataSource.setTargetDataSources(targetDataSources);
-        routingDataSource.setDefaultTargetDataSource(targetDataSources.get(Constant.X_BASE_VERSION)); // Default DataSource
         return routingDataSource;
     }
 
@@ -56,6 +57,7 @@ public class DynamicDataSourceConfig {
     }
 
     public static class DynamicDataSource extends AbstractRoutingDataSource {
+        @NotNull
         @Override
         protected Object determineCurrentLookupKey() {
             return GrayHeaderContextHolder.getGrayHeader();

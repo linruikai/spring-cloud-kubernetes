@@ -1,0 +1,38 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spring-cloud-k8s
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "pods", "services", "endpoints", "secrets"]
+    verbs: ["get", "list", "watch"]
+---
+# 创建ServiceAccount，用于pod访问K8S集群
+# 应用于deployment中 spec.template.spec.serviceAccountName=spring-cloud-k8s
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spring-cloud-k8s
+  namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spring-cloud-k8s
+  namespace: gray
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: spring-cloud-k8s
+subjects:
+  - kind: ServiceAccount
+    name: spring-cloud-k8s
+    namespace: default
+  - kind: ServiceAccount
+    name: spring-cloud-k8s
+    namespace: gray
+roleRef:
+  kind: ClusterRole
+  name: spring-cloud-k8s
+  apiGroup: rbac.authorization.k8s.io

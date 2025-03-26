@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-detail
+  namespace: gray
+data:
+  application.yaml: |-
+    test:
+      key: spring-detail-gray

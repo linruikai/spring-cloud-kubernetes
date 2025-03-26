@@ -19,7 +19,7 @@ public class CustomProducerInterceptor<K, V> implements ProducerInterceptor<K, V
         String topic = record.topic();
         String header = GrayHeaderContextHolder.getGrayHeader();
         if (Objects.nonNull(header)) {
-            topic = topic + "-" + header;
+            topic = topic + "-" + header; // 正则匹配topic
             Headers headers = record.headers();
             headers.add(new RecordHeader(Constant.X_GRAY_VERSION, header.getBytes()));
         }

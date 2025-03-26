@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-base
+  namespace: gray
+data:
+  application.yaml: |-
+    spring:
+      datasource:
+        gray:
+          url: jdbc:mysql://mysql.datasource.svc.cluster.local:3306/gray?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+          username: root
+          password: root123456
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      redis:
+        gray:
+          database: 1
+          host: redis-master.datasource.svc.cluster.local
+          port: 6379
+      kafka:
+        producer:
+          bootstrap-servers: kafka.datasource.svc.cluster.local:9092
+        consumer:
+          bootstrap-servers: kafka.datasource.svc.cluster.local:9092
+          group-id: default
+        topics:
+          topic-a: topic-a

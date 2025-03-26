@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-product
+  namespace: gray
+  labels:
+    app: spring-product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-product
+  template:
+    metadata:
+      labels:
+        app: spring-product
+    spec:
+      serviceAccountName: spring-cloud-k8s
+      containers:
+        - name: spring-product
+          image: spring-product-gray:latest
+          imagePullPolicy: Never
+          command: ["java", "-jar","-Xms128m","-Xmx128m","app.jar"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-product
+  namespace: gray
+  labels:
+    app: spring-product
+spec:
+  selector:
+    app: spring-product
+  ports:
+    - port: 8080
+      targetPort: 8080

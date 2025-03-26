@@ -1,14 +1,26 @@
 spring:
   application:
-    name: spring-product-service
+    name: spring-product
   cloud:
-    nacos:
+    kubernetes:
       discovery:
-        server-addr: 127.0.0.1:8848
+        all-namespaces: true
+      reload:
+        # 用于监听配置变化，实现动态刷新
+        enabled: true
       config:
-        server-addr: 127.0.0.1:8848
-        file-extension: yaml
-        shared-configs:
-          - data-id: datasource.yaml
-            group: DEFAULT_GROUP
-            refresh: true
+        enabled: true
+        sources:
+          - name: spring-base
+            namespace: default
+          - name: spring-base
+            namespace: gray
+          - name: spring-product
+            namespace: gray
+
+# 暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

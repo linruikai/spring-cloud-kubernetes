@@ -4,9 +4,8 @@ import org.example.dto.RedisDTO;
 import org.example.dto.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("spring-product-service")
+@FeignClient(name = "spring-product")
 public interface ProductFeignClient {
 
     @GetMapping("test")

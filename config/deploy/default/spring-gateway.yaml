@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-gateway
+  namespace: default
+  labels:
+    app: spring-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-gateway
+  template:
+    metadata:
+      labels:
+        app: spring-gateway
+    spec:
+      serviceAccountName: spring-cloud-k8s
+      containers:
+        - name: spring-gateway
+          image: spring-gateway:latest
+          imagePullPolicy: Never
+          command: ["java", "-jar","-Xms128m","-Xmx128m","app.jar"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-gateway
+  namespace: default
+  labels:
+    app: spring-gateway
+spec:
+  selector:
+    app: spring-gateway
+  ports:
+    - port: 8080
+      targetPort: 8080

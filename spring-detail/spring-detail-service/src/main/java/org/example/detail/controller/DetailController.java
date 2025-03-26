@@ -1,15 +1,14 @@
 package org.example.detail.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.base.config.Constant;
 import org.example.detail.service.IDetailService;
 import org.example.dto.RedisDTO;
 import org.example.dto.UserDTO;
 import org.example.entity.Detail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -19,14 +18,15 @@ public class DetailController {
     private IDetailService detailService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Value("${test.key}")
+    private String testKey;
     @GetMapping("test")
-    public String test(@RequestHeader(value = Constant.X_GRAY_VERSION,defaultValue = Constant.X_BASE_VERSION) String version) {
-        log.info("this is from detail {}", version);
-        return "this is from detail " + version;
+    public String test() {
+        log.info("this is from detail {}", testKey);
+        return "this is from detail " + testKey;
     }
     @GetMapping("mysql")
-    public UserDTO mysql(@RequestHeader(value = Constant.X_GRAY_VERSION,defaultValue = Constant.X_BASE_VERSION) String version) {
-        log.info("this is detail mysql {}", version );
+    public UserDTO mysql() {
         Detail detail = detailService.getById(1);
         UserDTO userDTO = new UserDTO();
         userDTO.setDetailName(detail.getName());
@@ -34,8 +34,7 @@ public class DetailController {
     }
 
     @GetMapping("redis")
-    public RedisDTO redis(@RequestHeader(value = Constant.X_GRAY_VERSION,defaultValue = Constant.X_BASE_VERSION) String version) {
-        log.info("this is detail redis {}", version);
+    public RedisDTO redis() {
         String c = redisTemplate.opsForValue().get("c");
         RedisDTO redisDTO = new RedisDTO();
         redisDTO.setKeyC(c);

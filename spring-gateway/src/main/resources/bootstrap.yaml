@@ -1,10 +1,21 @@
 spring:
   application:
-    name: spring-gateway-service
+    name: spring-gateway
   cloud:
-    nacos:
+    kubernetes:
       discovery:
-        server-addr: 127.0.0.1:8848
+        all-namespaces: true
+      reload:
+        # 用于监听配置变化，实现动态刷新
+        enabled: true
       config:
-        server-addr: 127.0.0.1:8848
-        file-extension: yaml
+        enabled: true
+        name: spring-gateway
+        namespace: default
+
+# 暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

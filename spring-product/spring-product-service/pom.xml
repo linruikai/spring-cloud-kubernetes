@@ -11,19 +11,23 @@
 
     <artifactId>spring-product-service</artifactId>
 
-   <dependencies>
-       <dependency>
-           <groupId>org.example</groupId>
-           <artifactId>spring-base</artifactId>
-           <version>1.0.0-SNAPSHOT</version>
-       </dependency>
-       <!-- 其他服务client包 -->
-       <dependency>
-           <groupId>org.example</groupId>
-           <artifactId>spring-detail-client</artifactId>
-           <version>1.0.0-SNAPSHOT</version>
-       </dependency>
-   </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>spring-entity</artifactId>
+            <version>${spring-entity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>spring-base</artifactId>
+            <version>${spring-base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>spring-detail-client</artifactId>
+            <version>${spring-detail-client.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

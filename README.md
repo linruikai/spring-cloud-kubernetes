@@ -1,24 +1,142 @@
-# 微服务多环境灰度
-多分支协同开发模式下，每一个feature分支对应一批开发同学，协同开发面临最严重的就是环境稳定性问题。经常因为环境问题而导致开发测试协调困难，影响项目进度的情况常常发生，因此解决环境冲突问题迫在眉睫。
+环境准备
+```shell
+minikube start --memory=8192mb --cpus=4  --addons=istio,istio-provisioner,ingress,ingress-dns,dashboard --nodes 3 -p multinode
+kubectl create namespace addons
+telepresence helm install --namespace=addons
+sudo telepresence connect
+```
 
-![git分支管理](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/64c5bddc164b4698ae592654188f12df~tplv-73owjymdk6-watermark.image?rk3s=f64ab15b&x-expires=1722157155&x-signature=%2FZOVeuwQtQ02aavfN1I7tdNN2PM%3D)
-# 解决方案
-## 物理环境隔离
-通过增加机器搭建流量隔离环境，部署服务的灰度版本。这种方式适用于测试、预发开发环境，但成本较高，灵活性不足
-![物理环境隔离](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/25341ab88625406ba218a1d030fce93f~tplv-73owjymdk6-watermark.image?rk3s=f64ab15b&x-expires=1722157155&x-signature=lShS%2BaxsKghj0U9ZJfgKJfNECY0%3D)
-## 逻辑环境隔离
-![逻辑环境隔离](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/3f3975b1e3044350b1af5b7fbf6c0d2d~tplv-73owjymdk6-watermark.image?rk3s=f64ab15b&x-expires=1722157155&x-signature=ESls4BOGsRgevTH%2Bhu%2Fbr2dr%2FUI%3D)
-## 理想状态
-![image3.png](https://p6-xtjj-sign.byteimg.com/tos-cn-i-73owjymdk6/cc06c1dc34ba4c2cb45fb6c62614123c~tplv-73owjymdk6-watermark.image?rk3s=f64ab15b&x-expires=1722157155&x-signature=8vuSK2RWYY2iXzH1KPdJSk1cQc0%3D)
-# 面临挑战
-- 实例打标
-- 流量染色
-- 服务路由
-- 数据库，redis，消息中间件流量路由
-- DevOps
-- 全链路追踪，监控
+创建mysql redis kafka
 
-针对以上问题，每一个点都是值得探讨和研究的，涉及到的技术细节跟需要权衡对比。
+mysql
+```shell
+helm install mysql bitnami/mysql -n datasource  -f my-mysql.yaml
+```
+```yaml
+architecture: standalone
+auth:
+  rootPassword: "root123456"
+  createDatabase: true  # 允许创建数据库
+primary:
+  persistence:
+    enabled: true
+    size: 128Mi
+  podSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    fsGroup: 1001
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+```
 
-# 实现文章链接
-[微服务多环境灰度](https://juejin.cn/post/7393533296241754150)
+redis
+```shell
+helm install redis bitnami/redis  -f  my-redis.yaml -n datasource
+```
+```yaml
+architecture: standalone
+auth:
+  enabled: false
+master:
+  persistence:
+    enabled: true
+    size: 128Mi
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 0
+    runAsGroup: 0
+    runAsNonRoot: false
+```
+kafka
+```shell
+helm install kafka  bitnami/kafka -n datasource  -f my-kafka.yaml
+```
+```yaml
+controller:
+  replicaCount: 1
+  heapOpts: -Xmx256m -Xms256m
+  persistence:
+    size: 128Mi
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+sasl:
+  client:
+    users:
+      - root
+    passwords: "root123456"
+```
+初始化mysql redis测试数据
+```shell
+config/datasource/db.sql
+config/datasource/redis.sh
+```
+
+创建配置文件
+```shell
+kubectl apply -f config/configmap -R
+```
+创建用户
+```shell
+kubectl apply -f deploy/spring-cloud-k8s-sa-cluster.yaml
+```
+
+创建istio路由
+```shell
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
+kubectl apply -f config/istio
+```
+
+gateway服务
+```shell
+cd spring-gateway
+sh run.sh
+cd ../
+```
+
+user服务
+```shell
+cd spring-user/spring-user-service
+sh run.sh
+cd ../../
+```
+user-gray服务
+```shell
+cd spring-user/spring-user-service
+sh run-gray.sh
+cd ../../
+```
+
+product服务
+```shell
+cd spring-product/spring-product-service
+sh run.sh
+cd ../../
+```
+product-gray服务
+```shell
+cd spring-product/spring-product-service
+sh run-gray.sh
+cd ../../
+```
+
+detail服务
+```shell
+cd spring-detail/spring-detail-service
+sh run.sh
+cd ../../
+```
+
+detail-gray服务
+```shell
+cd spring-detail/spring-detail-service
+sh run-gray.sh
+cd ../../
+```

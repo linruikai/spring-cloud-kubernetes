@@ -13,10 +13,15 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>
-        <!-- openfeign-->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>spring-entity</artifactId>
+            <version>${spring-entity.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${openfeign.version}</version>
         </dependency>
     </dependencies>
 

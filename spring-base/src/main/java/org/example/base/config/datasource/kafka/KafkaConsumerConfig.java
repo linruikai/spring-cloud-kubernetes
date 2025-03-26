@@ -1,6 +1,8 @@
 package org.example.base.config.datasource.kafka;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +29,11 @@ public class KafkaConsumerConfig {
                 ConsumerConfig.GROUP_ID_CONFIG, groupId,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, Collections.singletonList(CustomConsumerInterceptor.class)
+                ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, Collections.singletonList(CustomConsumerInterceptor.class),
+                // helm 安装kafka，返回的配置
+                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT",
+                SaslConfigs.SASL_MECHANISM, "PLAIN",
+                SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"root\" password=\"root123456\";"
         )));
         return factory;
     }
