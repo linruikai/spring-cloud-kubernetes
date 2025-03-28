@@ -19,14 +19,12 @@ public class CustomLoadBalancerConfiguration implements ReactorServiceInstanceLo
     final String serviceId;
     ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider;
     final DiscoveryClient discoveryClient;
-    final LoadBalancerClient loadBalancerClient;
 
     public CustomLoadBalancerConfiguration(ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider,
-                                           String serviceId, DiscoveryClient discoveryClient,LoadBalancerClient loadBalancerClient) {
+                                           String serviceId, DiscoveryClient discoveryClient) {
         this.serviceId = serviceId;
         this.serviceInstanceListSupplierProvider = serviceInstanceListSupplierProvider;
         this.discoveryClient = discoveryClient;
-        this.loadBalancerClient = loadBalancerClient;
     }
 
     @Override

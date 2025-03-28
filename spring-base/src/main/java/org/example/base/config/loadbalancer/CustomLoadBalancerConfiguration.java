@@ -8,32 +8,26 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.*;
 import org.springframework.cloud.kubernetes.commons.discovery.DefaultKubernetesServiceInstance;
-import org.springframework.cloud.kubernetes.commons.discovery.KubernetesServiceInstance;
 import org.springframework.cloud.loadbalancer.core.NoopServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.core.ReactorServiceInstanceLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.http.HttpHeaders;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 public class CustomLoadBalancerConfiguration implements ReactorServiceInstanceLoadBalancer {
     final String serviceId;
     ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider;
     final DiscoveryClient discoveryClient;
-    final LoadBalancerClient loadBalancerClient;
 
     public CustomLoadBalancerConfiguration(ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider,
-                                           String serviceId, DiscoveryClient discoveryClient,LoadBalancerClient loadBalancerClient) {
+                                           String serviceId, DiscoveryClient discoveryClient) {
         this.serviceId = serviceId;
         this.serviceInstanceListSupplierProvider = serviceInstanceListSupplierProvider;
         this.discoveryClient = discoveryClient;
-        this.loadBalancerClient = loadBalancerClient;
     }
 
     @Override
